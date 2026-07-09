@@ -1,0 +1,134 @@
+[
+  {
+    "rule_id": "BIO-GEO-001",
+    "version": "0.1",
+    "domain": "biodata",
+    "description": "Non-human public omics dataset used for research-only DEA is generally low risk.",
+    "conditions": {
+      "organism_not": ["Homo sapiens", "human"],
+      "use_case_category": ["differential_expression_analysis"],
+      "research_only": true,
+      "commercial": false,
+      "clinical": false
+    },
+    "verdict": "allowed",
+    "risk_level": "low",
+    "reason": "The dataset appears to be non-human and used for research-only differential expression analysis.",
+    "required_actions": [
+      "Review database access terms.",
+      "Cite original dataset and publication.",
+      "Do not make clinical or commercial claims without further review."
+    ],
+    "evidence_ids": ["EV-GEO-TERMS-001"]
+  },
+  {
+    "rule_id": "BIO-HUMAN-001",
+    "version": "0.1",
+    "domain": "biodata",
+    "description": "Human omics data used for commercial biomarker discovery requires consent and data-use review.",
+    "conditions": {
+      "organism": ["Homo sapiens", "human"],
+      "commercial": true
+    },
+    "verdict": "conditionally_allowed",
+    "risk_level": "high",
+    "reason": "Human omics data used for commercial purposes may require review of consent, data-use limitations, privacy status, and original database terms.",
+    "required_actions": [
+      "Confirm original consent and data-use limitations.",
+      "Check whether individual-level raw data is used.",
+      "Confirm whether sample origin involves China or other restricted jurisdictions.",
+      "Avoid re-identification attempts.",
+      "Document the commercial-use basis."
+    ],
+    "evidence_ids": ["EV-GEO-TERMS-001", "EV-HUMAN-DATA-USE-001"]
+  },
+  {
+    "rule_id": "BIO-CLINICAL-001",
+    "version": "0.1",
+    "domain": "biodata",
+    "description": "Human omics data used for clinical screening or diagnostic development requires heightened regulatory review.",
+    "conditions": {
+      "organism": ["Homo sapiens", "human"],
+      "clinical": true
+    },
+    "verdict": "requires_filing_or_approval",
+    "risk_level": "high",
+    "reason": "Clinical screening or diagnostic use may trigger clinical validation, laboratory, medical device, privacy, and consent requirements.",
+    "required_actions": [
+      "Determine whether output will be used for diagnosis, screening, or treatment decisions.",
+      "Review clinical validation requirements.",
+      "Review laboratory qualification requirements.",
+      "Review privacy and consent basis.",
+      "Separate research-only analysis from clinical claims."
+    ],
+    "evidence_ids": ["EV-CLINICAL-USE-001"]
+  },
+  {
+    "rule_id": "CN-HGR-001",
+    "version": "0.1",
+    "domain": "biodata",
+    "description": "Human genetic or omics data involving Chinese human samples and cross-border or external use may require China HGR review.",
+    "conditions": {
+      "organism": ["Homo sapiens", "human"],
+      "sample_origin": ["China", "Chinese", "unknown"],
+      "cross_border": true
+    },
+    "verdict": "requires_filing_or_approval",
+    "risk_level": "high",
+    "reason": "If human genetic resource information involves Chinese human samples and is provided abroad or opened externally, China HGR-related review may be relevant.",
+    "required_actions": [
+      "Confirm whether samples are from Chinese individuals.",
+      "Confirm whether data qualifies as human genetic resource information.",
+      "Confirm whether data is being provided abroad or opened externally.",
+      "Review applicable filing, prior report, approval, or ethics requirements."
+    ],
+    "evidence_ids": ["EV-CN-HGR-001"]
+  },
+  {
+    "rule_id": "CN-HGR-002",
+    "version": "0.1",
+    "domain": "biodata",
+    "description": "Human data used cross-border with an UNSPECIFIED sample origin — treated as potential China HGR until origin is confirmed. Companion to CN-HGR-001, which covers the literal China/Chinese/unknown values; this covers a truly-absent origin (the normalizer emits an empty string, not the literal 'unknown').",
+    "conditions": {
+      "organism": ["Homo sapiens", "human"],
+      "cross_border": true,
+      "missing_any": ["sample_origin"]
+    },
+    "verdict": "requires_filing_or_approval",
+    "risk_level": "high",
+    "reason": "Sample origin is not specified for human data processed or shared cross-border; until origin is confirmed non-Chinese, China HGR-related review may be relevant.",
+    "required_actions": [
+      "Confirm the sample origin — specifically whether samples are from Chinese individuals.",
+      "Confirm whether data qualifies as human genetic resource information.",
+      "Confirm whether data is being provided abroad or opened externally.",
+      "Review applicable filing, prior report, approval, or ethics requirements."
+    ],
+    "evidence_ids": ["EV-CN-HGR-001"]
+  },
+  {
+    "rule_id": "BIO-MISSING-001",
+    "version": "0.1",
+    "domain": "biodata",
+    "description": "Insufficient information prevents a reliable clearance decision.",
+    "conditions": {
+      "missing_any": [
+        "organism",
+        "data_type",
+        "commercial",
+        "clinical",
+        "cross_border"
+      ]
+    },
+    "verdict": "insufficient_information",
+    "risk_level": "unknown",
+    "reason": "Key information is missing, so the system cannot provide a reliable clearance decision.",
+    "required_actions": [
+      "Provide organism.",
+      "Provide data type.",
+      "Specify whether the use is commercial.",
+      "Specify whether the use is clinical.",
+      "Specify whether cross-border processing or sharing occurs."
+    ],
+    "evidence_ids": []
+  }
+]

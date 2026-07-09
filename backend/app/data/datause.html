@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Data Boundary</title>
+<link rel="icon" href="data:," />
+<style>
+  :root{
+    --paper:#efece3; --surface:#faf8f2; --surf2:#f2efe6; --inset:#eae6da;
+    --ink:#211d17; --ink2:#5c5449; --ink3:#8c8577; --line:#e0daca; --line2:#d3ccba;
+    --accent:#2b3a67; --accent2:#1e2b50; --btn-fg:#faf8f2;
+    --good-fg:#2c6a4a; --good-bg:#e7efe4; --good-bd:#c1d8bf;
+    --caut-fg:#8a6a16; --caut-bg:#f4ecd2; --caut-bd:#e4d29d;
+    --warn-fg:#a5561c; --warn-bg:#f5e6d6; --warn-bd:#eac8a6;
+    --crit-fg:#9c352f; --crit-bg:#f4e1dd; --crit-bd:#e8bdb8;
+    --neut-fg:#5c5449; --neut-bg:#eae5d9; --neut-bd:#d8d1c1;
+    --sh:0 1px 0 rgba(33,29,23,.03),0 10px 30px rgba(33,29,23,.06);
+    --serif:ui-serif,"New York",Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,"Cascadia Code",monospace;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --paper:#16130e; --surface:#1e1a13; --surf2:#241f17; --inset:#201b14;
+    --ink:#ece5d7; --ink2:#b2a996; --ink3:#7c7565; --line:#322c21; --line2:#3d3629;
+    --accent:#93a6d8; --accent2:#aab9e2; --btn-fg:#16130e;
+    --good-fg:#64c295; --good-bg:#15271c; --good-bd:#284635;
+    --caut-fg:#d8b263; --caut-bg:#29210f; --caut-bd:#463819;
+    --warn-fg:#e0955c; --warn-bg:#291b11; --warn-bd:#48301d;
+    --crit-fg:#e58a80; --crit-bg:#291714; --crit-bd:#472621;
+    --neut-fg:#b2a996; --neut-bg:#221e17; --neut-bd:#373025;
+    --sh:0 1px 0 rgba(0,0,0,.3),0 14px 34px rgba(0,0,0,.4);
+  }}
+  :root[data-theme="light"]{--paper:#efece3;--surface:#faf8f2;--surf2:#f2efe6;--inset:#eae6da;--ink:#211d17;--ink2:#5c5449;--ink3:#8c8577;--line:#e0daca;--line2:#d3ccba;--accent:#2b3a67;--accent2:#1e2b50;--btn-fg:#faf8f2;--good-fg:#2c6a4a;--good-bg:#e7efe4;--good-bd:#c1d8bf;--caut-fg:#8a6a16;--caut-bg:#f4ecd2;--caut-bd:#e4d29d;--warn-fg:#a5561c;--warn-bg:#f5e6d6;--warn-bd:#eac8a6;--crit-fg:#9c352f;--crit-bg:#f4e1dd;--crit-bd:#e8bdb8;--neut-fg:#5c5449;--neut-bg:#eae5d9;--neut-bd:#d8d1c1;--sh:0 1px 0 rgba(33,29,23,.03),0 10px 30px rgba(33,29,23,.06);}
+  :root[data-theme="dark"]{--paper:#16130e;--surface:#1e1a13;--surf2:#241f17;--inset:#201b14;--ink:#ece5d7;--ink2:#b2a996;--ink3:#7c7565;--line:#322c21;--line2:#3d3629;--accent:#93a6d8;--accent2:#aab9e2;--btn-fg:#16130e;--good-fg:#64c295;--good-bg:#15271c;--good-bd:#284635;--caut-fg:#d8b263;--caut-bg:#29210f;--caut-bd:#463819;--warn-fg:#e0955c;--warn-bg:#291b11;--warn-bd:#48301d;--crit-fg:#e58a80;--crit-bg:#291714;--crit-bd:#472621;--neut-fg:#b2a996;--neut-bg:#221e17;--neut-bd:#373025;--sh:0 1px 0 rgba(0,0,0,.3),0 14px 34px rgba(0,0,0,.4);}
+
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;
+    font-family:var(--sans);font-size:15.5px;line-height:1.6}
+  a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+  a:hover{border-bottom-color:var(--accent)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+
+  header{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--paper) 88%,transparent);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .hbar{max-width:1360px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:14px 24px}
+  .mark{width:40px;height:40px;flex:none;border:1.5px solid var(--accent);border-radius:4px;display:grid;place-items:center;
+    font-family:var(--serif);font-weight:600;font-size:23px;color:var(--accent)}
+  .brand h1{margin:0;font-family:var(--serif);font-size:19px;font-weight:600;letter-spacing:.01em}
+  .brand p{margin:2px 0 0;font-family:var(--mono);font-size:11px;letter-spacing:.02em;color:var(--ink3)}
+  .brand p b{color:var(--accent);font-weight:600}
+  .grow{flex:1}
+  .chip{display:inline-flex;align-items:center;gap:7px;height:33px;padding:0 12px;border-radius:4px;cursor:pointer;
+    font-family:var(--mono);font-size:12px;color:var(--ink2);background:var(--surface);border:1px solid var(--line)}
+  .chip:hover{border-color:var(--accent);color:var(--ink)}
+
+  /* ── two-column workspace ── */
+  main{max-width:1360px;margin:0 auto;padding:20px 24px 40px}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(460px,520px);gap:24px;align-items:start}
+  .col-right{position:sticky;top:84px}
+  .col-right>.card{display:flex;flex-direction:column;overflow:visible}
+  .col-right .msgs{flex:1;min-height:160px;overflow-y:auto;padding-right:4px;scrollbar-width:thin}
+  @media (max-width:1120px){.layout{grid-template-columns:1fr}.col-right{position:static}.col-right>.card{max-height:none;overflow:visible}}
+  @media (max-width:1120px){.col-right>.card{min-height:0 !important}.col-right .msgs{max-height:none;overflow:visible;padding-right:0}}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:6px;box-shadow:var(--sh);padding:22px 24px}
+  .eyebrow{margin:0 0 13px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    font-weight:600;color:var(--ink3);display:flex;align-items:center;gap:9px}
+  .eyebrow::before{content:"";width:18px;height:1.5px;background:var(--accent);flex:none;opacity:.75}
+  h2.q{margin:0 0 5px;font-family:var(--serif);font-size:23px;font-weight:600;line-height:1.28;text-wrap:balance}
+  .sub{margin:0;color:var(--ink2);font-size:14px}
+
+  .thread{display:flex;flex-direction:column;gap:16px}
+  .block{background:var(--surface);border:1px solid var(--line);border-radius:6px;box-shadow:var(--sh);padding:22px 24px}
+
+  textarea,input,select{font:inherit;color:var(--ink);background:var(--paper);
+    border:1px solid var(--line2);border-radius:5px;padding:10px 12px;width:100%}
+  textarea{min-height:96px;resize:none;line-height:1.55;overflow:hidden}
+  select{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink3) 50%),linear-gradient(135deg,var(--ink3) 50%,transparent 50%);
+    background-position:calc(100% - 16px) 52%,calc(100% - 11px) 52%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:32px}
+  textarea:focus,input:focus,select:focus{outline:none;border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}
+  .btn{background:var(--accent);color:var(--btn-fg);border:none;border-radius:5px;padding:11px 20px;font-family:var(--sans);
+    font-size:14.5px;font-weight:600;cursor:pointer;transition:background .12s ease;white-space:nowrap}
+  .btn:hover{background:var(--accent2)} .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--ink2);border:1px solid var(--line2)}
+  .btn.ghost:hover{border-color:var(--accent);color:var(--ink);background:transparent}
+  .btn.sm{padding:8px 14px;font-size:13px}
+  .row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .hint{color:var(--ink3);font-size:12.5px}
+
+  /* chat bubbles (both panels) */
+  .msgs{display:flex;flex-direction:column;gap:12px}
+  .msg{max-width:94%;padding:11px 14px;border-radius:5px;font-size:14.5px;line-height:1.72;white-space:pre-wrap;word-break:break-word}
+  .msg.user{align-self:flex-end;background:var(--accent);color:var(--btn-fg);max-width:86%}
+  .msg.ai{align-self:stretch;max-width:100%;background:var(--surf2);border:1px solid var(--line)}
+  .msg.ai p{margin:0 0 9px}.msg.ai p:last-child{margin-bottom:0}
+  .msg.ai strong{font-weight:650;color:var(--ink)}
+  .msg.ai code{font-family:var(--mono);font-size:.92em;background:var(--inset);border:1px solid var(--line);border-radius:3px;padding:0 4px}
+  .msg.ai ul,.msg.ai ol{margin:7px 0 7px 19px;padding:0}.msg.ai li{margin:3px 0}
+  .msg.think{color:var(--ink3);font-style:italic}
+  .chatrow{display:flex;gap:9px;align-items:flex-end;margin-top:14px}
+  .chatrow textarea{min-height:44px}
+  .col-right .chatrow{display:block;position:relative}
+  .col-right .chatrow textarea{display:block;padding-right:54px;padding-bottom:46px}
+  .col-right .chatrow .btn{position:absolute;right:10px;bottom:10px;width:34px;height:34px;min-height:34px;padding:0;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:0;line-height:0}
+  .col-right .chatrow .btn svg{width:18px;height:18px;display:block;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;fill:none}
+  .col-right .chatrow .btn:disabled svg{opacity:.7}
+  #scopeIn{min-height:96px;max-height:none}
+  #rightIn{min-height:44px;max-height:none}
+
+  .spin{width:18px;height:18px;flex:none;border-radius:50%;border:2.4px solid var(--inset);border-top-color:var(--accent);animation:sp .8s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}} @media(prefers-reduced-motion){.spin{animation:none}}
+  .load{display:flex;gap:12px;align-items:flex-start}
+
+  /* ── schema card ── */
+  .scg{display:flex;flex-direction:column;gap:16px;margin-top:16px}
+  .sgrp>.gh{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--accent);
+    display:flex;align-items:center;gap:8px;margin-bottom:9px}
+  .sgrp>.gh::before{content:"§";font-family:var(--serif);opacity:.7}
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+  @media (max-width:560px){.fgrid{grid-template-columns:1fr}}
+  .field{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .field.wide{grid-column:1/-1}
+  .field label{font-size:11.5px;font-weight:600;color:var(--ink2)}
+  .field .en{font-family:var(--mono);font-size:10px;color:var(--ink3);font-weight:500}
+  .field.ai input,.field.ai select,.field.ai .tags{border-color:var(--caut-bd);background:color-mix(in srgb,var(--caut-bg) 55%,var(--paper))}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;border:1px solid var(--line2);border-radius:5px;padding:8px}
+  .tag{font-family:var(--mono);font-size:11.5px;padding:3px 9px;border-radius:3px;border:1px solid var(--line2);cursor:pointer;color:var(--ink3);user-select:none}
+  .tag.on{background:var(--accent);color:var(--btn-fg);border-color:var(--accent)}
+  .cardfoot{margin-top:18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+
+  /* ── verdict stamps ── */
+  .vgrid{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+  .vpanel{border:1.5px solid;border-radius:5px;padding:16px 18px}
+  .vpanel.good{background:var(--good-bg);border-color:var(--good-bd)}
+  .vpanel.caution{background:var(--caut-bg);border-color:var(--caut-bd)}
+  .vpanel.warn{background:var(--warn-bg);border-color:var(--warn-bd)}
+  .vpanel.crit{background:var(--crit-bg);border-color:var(--crit-bd)}
+  .vpanel.neutral{background:var(--neut-bg);border-color:var(--neut-bd)}
+  .vtop{display:flex;align-items:baseline;gap:12px;padding-bottom:11px;margin-bottom:11px;border-bottom:1px solid color-mix(in srgb,var(--ink3) 24%,transparent)}
+  .vkick{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);flex:none}
+  .vname{font-family:var(--serif);font-weight:600;font-size:18px;flex:1;min-width:0;line-height:1.3}
+  .pill{display:inline-flex;align-items:center;font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.04em;
+    padding:3px 10px;border-radius:3px;white-space:nowrap;border:1.2px solid currentColor;background:color-mix(in srgb,currentColor 8%,transparent)}
+  .pill.good{color:var(--good-fg)} .pill.caution{color:var(--caut-fg)} .pill.warn{color:var(--warn-fg)}
+  .pill.crit{color:var(--crit-fg)} .pill.neutral{color:var(--neut-fg)}
+  .vline{margin:0 0 12px;font-size:14px;color:var(--ink);line-height:1.62}
+  .vmeta{display:flex;flex-direction:column;gap:7px}
+  .vm{display:flex;gap:11px;font-size:13.5px;line-height:1.55}
+  .vmk{flex:none;width:52px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;font-weight:600;text-transform:uppercase;color:var(--ink3);margin-top:3px}
+  .vm.have .vmk{color:var(--good-fg)}
+  .vm span:last-child{color:var(--ink)}
+
+  ul.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+  ul.list li{display:flex;gap:11px;font-size:14px;line-height:1.55}
+  ul.list li .ld{flex:none;width:20px;text-align:center;font-family:var(--mono);color:var(--accent);margin-top:1px}
+  ul.list li .why{color:var(--ink3);font-size:12.5px;margin-top:2px}
+
+  .src{padding:13px 0;border-top:1px solid var(--line)} .src:first-child{border-top:none}
+  .src .st{font-family:var(--serif);font-weight:600;font-size:14.5px}
+  .cite{font-family:var(--mono);font-size:11.5px;color:var(--ink2)}
+  .quote{margin-top:7px;padding:3px 0 3px 13px;border-left:2px solid var(--accent);font-family:var(--serif);font-size:13.5px;font-style:italic;color:var(--ink2)}
+  .metaline{margin-top:6px;font-size:12.5px;color:var(--ink3);display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+
+  details>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:12px;letter-spacing:.03em;font-weight:600;color:var(--ink2)}
+  details>summary::-webkit-details-marker{display:none}
+  details>summary:hover{color:var(--ink)}
+  .chev{transition:transform .15s ease;color:var(--accent)} details[open]>summary .chev{transform:rotate(90deg)}
+  .dbody{margin-top:16px;display:flex;flex-direction:column;gap:18px}
+  .facts{background:var(--inset);border-left:2px solid var(--line2);border-radius:0 4px 4px 0;padding:12px 15px;font-family:var(--mono);font-size:11.5px;color:var(--ink2);line-height:1.85;word-break:break-word}
+  .lrow{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px}
+  .lrow:first-child{border-top:none} .lrow .lr2{color:var(--ink3);font-size:12px;margin-top:2px}
+  details.mini{border:1px solid var(--line);border-radius:5px;padding:14px}
+  .tbl-wrap{overflow-x:auto}
+
+  .foot{max-width:1200px;margin:22px auto 0;padding:18px 24px 0;border-top:1px solid var(--line);text-align:center;color:var(--ink3);font-family:var(--mono);font-size:11px;line-height:1.8}
+  .foot p{margin:5px 0}
+
+  .modal{position:fixed;inset:0;z-index:50;display:none;place-items:center;padding:20px;background:rgba(22,19,14,.55);backdrop-filter:blur(3px)}
+  .modal.on{display:grid}
+  .panel{width:min(620px,100%);max-height:calc(100vh - 40px);overflow:auto;background:var(--surface);border:1px solid var(--line2);border-radius:6px;padding:24px;box-shadow:var(--sh)}
+  .panel.wide{width:min(720px,100%)}
+  .panel h3{margin:0 0 5px;font-family:var(--serif);font-size:19px;font-weight:600}
+  .panel label{display:block;margin:15px 0 5px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;font-weight:600;color:var(--ink2)}
+  .panel input,.panel select{background:var(--paper)}
+  .acts{display:flex;gap:10px;margin-top:20px;align-items:center;flex-wrap:wrap}
+  .acts .btn{min-height:38px}
+  @media (max-width:560px){.acts .btn{flex:1 1 auto}.acts .grow{display:none}}
+  .err{color:var(--crit-fg);font-size:13.5px}
+  .rhint{color:var(--ink3);font-size:13px;line-height:1.6;padding:8px 0}
+  .helpgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+  @media (max-width:640px){.helpgrid{grid-template-columns:1fr}}
+  .helpitem{border:1px solid var(--line);border-radius:5px;padding:12px 14px;background:var(--paper)}
+  .helpitem b{display:block;font-family:var(--serif);font-size:15px;margin-bottom:3px}
+  .example{margin-top:14px;border-left:2px solid var(--accent);padding:9px 0 9px 14px;color:var(--ink2);font-size:13.5px}
+</style>
+</head>
+<body>
+
+<header><div class="hbar">
+  <div class="mark">§</div>
+  <div class="brand"><h1>Data Boundary</h1><p>Preliminary Data-Use Review · U.S. privacy, consent, source terms, and use constraints</p></div>
+  <div class="grow"></div>
+  <button class="chip" id="helpBtn">Instructions</button>
+  <button class="chip" id="themeBtn" title="Toggle color theme" style="padding:0 12px">◐</button>
+  <button class="chip" id="setBtn">Settings</button>
+</div></header>
+
+<main>
+  <div class="layout">
+    <!-- Workspace -->
+    <div class="col-left">
+      <div class="thread" id="thread">
+        <section class="card" id="intake">
+          <p class="eyebrow">Facts</p>
+          <h2 class="q">Describe the proposed data use</h2>
+          <p class="sub">Describe what the data contains, how it was obtained, whether it is identifiable or sensitive, where the data subjects are located, and how you plan to use it for research or commercialization. Once the facts are ready, start a preliminary assessment.</p>
+          <div class="chatrow">
+            <textarea id="scopeIn" placeholder="Example: Briefly state the dataset, source, identifiability, subject location, license or terms, and intended use."></textarea>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <button class="btn" id="startBtn">Start preliminary assessment</button>
+            <span class="hint">Need help organizing the facts? Ask the Fact Review panel on the right. Assessment usually takes 30-120 seconds.</span>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Fact review and follow-up -->
+    <div class="col-right">
+      <section class="card">
+        <p class="eyebrow">Fact Review</p>
+        <div id="rightIntro" class="rhint">Before assessment: add details here and ask for help organizing the relevant facts. This panel <b>does not make a conclusion that the proposed use is permitted or not permitted</b>.<br><br>After assessment: the preliminary assessment will load here. You may ask follow-up questions about the rationale, such as “why is the commercial use not recommended on the current facts?” This panel does not alter the rule decision; if a question changes a key fact, it will direct you back to the left-side facts for correction and reassessment.</div>
+        <div class="msgs" id="rightMsgs"></div>
+        <div class="chatrow">
+          <textarea id="rightIn" placeholder="Ask a fact or rationale question... (Cmd/Ctrl + Enter to submit)"></textarea>
+          <button class="btn" id="rightSend" aria-label="Send message" title="Send message">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 19V5"></path>
+              <path d="M5 12l7-7 7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </section>
+    </div>
+  </div>
+  <div class="foot" id="foot" hidden></div>
+</main>
+
+<div class="modal" id="modal"><div class="panel">
+  <h3>Model Service Settings</h3>
+  <p class="sub" style="font-size:13px">Used to extract structured facts from the scenario and assist source-by-source review. Keys are stored only in the local user config on this Mac and are not bundled into the app package.</p>
+  <label>Provider</label><select id="sProvider"></select>
+  <label>Endpoint</label><input id="sEndpoint" placeholder="https://api.deepseek.com/v1" />
+  <label>Model</label><input id="sModel" placeholder="deepseek-chat" />
+  <label>API Key</label><input id="sKey" type="password" placeholder="Leave blank to keep the saved key" />
+  <div id="sMsg" style="margin-top:12px;font-size:12.5px;color:var(--ink3)"></div>
+  <div class="acts">
+    <button class="btn" id="sSave">Save settings</button>
+    <button class="btn ghost" id="sTest">Test connection</button>
+    <button class="btn ghost" id="sClear">Clear saved key</button>
+    <div class="grow"></div>
+    <button class="btn ghost" id="sClose">Close</button>
+  </div>
+</div></div>
+
+<div class="modal" id="helpModal"><div class="panel wide">
+  <h3>Instructions</h3>
+  <p class="sub" style="font-size:13px">Use this workspace to organize proposed data-use facts and generate a preliminary assessment based on the facts you confirm.</p>
+  <div class="helpgrid">
+    <div class="helpitem"><b>1. Describe the facts</b><span class="sub">Enter what the data contains, where it came from, whether people can be identified, subject locations, source terms, and the intended use.</span></div>
+    <div class="helpitem"><b>2. Confirm extracted facts</b><span class="sub">Review the structured fields generated from your text. Correct uncertain fields before running the assessment.</span></div>
+    <div class="helpitem"><b>3. Read the assessment</b><span class="sub">The result separates the preliminary conclusion, open facts that may change it, and the sources checked for the assessment.</span></div>
+    <div class="helpitem"><b>4. Use Fact Review</b><span class="sub">Ask for help organizing facts before assessment, or ask follow-up questions about the rationale after assessment.</span></div>
+  </div>
+  <div class="example">Example: A California biotech company plans to use a registered public gene-expression dataset with disease labels to train a commercial oncology model; the license and consent terms are unclear, and subjects may include California and Washington residents.</div>
+  <div class="acts">
+    <div class="grow"></div>
+    <button class="btn" id="helpClose">Close</button>
+  </div>
+</div></div>
+
+<script>
+(function(){
+  "use strict";
+  const $=s=>document.querySelector(s);
+  const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+  const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+  const safeUrl=u=>{u=String(u==null?"":u).trim();return /^https?:\/\//i.test(u)?u:"";};   // block javascript:/data: schemes
+  const pill=(tone,txt)=>'<span class="pill '+tone+'">'+esc(txt)+'</span>';
+
+  const VERDICT={
+    allowed:{pill:"Preliminarily usable",tone:"good",line:"Subject to attribution and compliance with source terms, the preliminary assessment indicates that this use is viable."},
+    conditionally_allowed:{pill:"Usable after conditions",tone:"caution",line:"The use appears viable after the listed conditions are satisfied."},
+    requires_approval:{pill:"Approval or authorization required",tone:"warn",line:"Obtain the relevant authorization, approval, DUA, IRB determination, or license before proceeding."},
+    restricted:{pill:"Not recommended on current facts",tone:"crit",line:"On the current facts, the preliminary assessment does not recommend this use unless the use is changed or additional authorization is obtained."},
+    insufficient:{pill:"Insufficient information",tone:"neutral",line:"Key facts remain unclear and must be supplied before the use can be assessed."}
+  };
+  const PURPOSE={research:{kick:"Purpose A",name:"Research / academic publication"},commercial:{kick:"Purpose B",name:"Commercial / productized use"}};
+  const LAW_SHORT={ccpa:"State comprehensive privacy laws (CCPA/CPRA etc.)",hipaa:"HIPAA",wa_mhmda:"Consumer health data laws (MHMDA)",coppa:"COPPA (children)",bipa:"Biometric privacy laws (BIPA)",gina:"Genetic privacy (GINA)",ferpa:"FERPA (education)",glba:"GLBA (financial)",vppa:"VPPA (video viewing)",common_rule:"Human-subjects research review (IRB)"};
+  const LAW_NEED={ccpa:"Implement state privacy obligations: notice, opt-out, access, and deletion rights",hipaa:"Obtain HIPAA authorization, an IRB waiver, or limited data set plus DUA",wa_mhmda:"Obtain separate opt-in consent",coppa:"Obtain verifiable parental consent",bipa:"Obtain written informed consent before collecting biometric identifiers",gina:"Comply with GINA and state genetic-privacy restrictions",ferpa:"Obtain consent or fit a research / audit exception",glba:"Implement GLBA privacy and safeguards obligations",vppa:"Obtain VPPA-compliant consent",common_rule:"Submit to an institutional IRB, or obtain an exemption / waiver"};
+  const OFF_SHORT={"no commercial grant":"No commercial-use grant","license forbids commercial use":"License bars commercial use","blocks use until access granted":"No executed data use agreement (DUA)","scraping risk":"Scraping / source-terms risk","ToS restricts use":"Source terms restrict use","reduces statutory exposure":"De-identified data","does NOT remove statutes":"De-identification is insufficient"};
+  const OFF_NEED={"no commercial grant":"Obtain express commercial authorization or a license","license forbids commercial use":"Obtain a commercial license","blocks use until access granted":"Request access and execute the DUA","scraping risk":"Confirm the source terms allow this use","ToS restricts use":"Comply with or obtain permission under the source terms"};
+
+  /* Schema-card registry. */
+  const OPT={
+    ident:[["","Unknown"],["identified","Directly identifiable"],["pseudonymized","Pseudonymized"],["deidentified_hipaa_safeharbor","HIPAA Safe Harbor de-identified"],["deidentified_expert","Expert-determined de-identified"],["deidentified_other","Other de-identification method"],["anonymized","Anonymous"],["aggregate","Aggregate statistics only"]],
+    source:[["","Unknown"],["public_open","Public, no registration"],["public_registered","Public, registration required"],["controlled_access","Controlled access"],["collaborator","Provided by collaborator"],["scraped","Web scraped"],["internal","Internal data"]],
+    license:[["","Unknown"],["permissive","Permissive, commercial use allowed"],["research_only","Research only"],["noncommercial","Noncommercial only"],["none","No license"]],
+    actor:[["","Unknown"],["company","Company"],["academic_institution","Academic institution"],["researcher_individual","Individual researcher"],["nonprofit","Nonprofit organization"]],
+    sector:[["","Unknown"],["healthcare_covered_entity","HIPAA covered entity"],["business_associate","Business associate"],["financial_institution","Financial institution"],["educational_institution","Educational institution"],["none","None of the above"]],
+    irb:[["","Unknown"],["approved","Approved"],["exempt","Exempt"],["pending","Pending"],["none","None"]]
+  };
+  const CATS=[["health","Health"],["genetic","Genetic"],["biometric","Biometric"],["financial","Financial"],["education","Education"],["children","Children"],["contact","Contact"],["precise_geo","Precise location"],["video_viewing","Video viewing"],["driver","Driver / vehicle"],["behavioral","Behavioral"]];
+  const FIELDS=[
+    {g:"Data",path:"object.contains_personal_data",label:"Contains personal information",en:"personal_data",kind:"tri"},
+    {g:"Data",path:"object.identifiability",label:"Identifiability",en:"identifiability",kind:"sel",opts:"ident"},
+    {g:"Data",path:"object.data_categories",label:"Data categories",en:"data_categories",kind:"tags",wide:true},
+    {g:"Data",path:"object.source_type",label:"Acquisition method",en:"source_type",kind:"sel",opts:"source"},
+    {g:"Data",path:"object.license",label:"Use license",en:"license",kind:"sel",opts:"license"},
+    {g:"Data",path:"object.has_dua",label:"DUA executed",en:"has_dua",kind:"tri"},
+    {g:"Data",path:"object.includes_children_under_13",label:"Includes children under 13",en:"children_u13",kind:"tri"},
+    {g:"Data",path:"object.publicly_available",label:"Publicly available",en:"publicly_available",kind:"tri"},
+    {g:"Actor",path:"actor.actor_type",label:"Your role",en:"actor_type",kind:"sel",opts:"actor"},
+    {g:"Actor",path:"actor.for_profit",label:"For profit",en:"for_profit",kind:"tri"},
+    {g:"Actor",path:"actor.sector",label:"Regulated sector",en:"sector",kind:"sel",opts:"sector"},
+    {g:"Actor",path:"actor.meets_state_threshold",label:"Meets state-law threshold",en:"meets_threshold",kind:"tri"},
+    {g:"Use",path:"use_case.commercial",label:"Commercial use",en:"commercial",kind:"tri"},
+    {g:"Use",path:"use_case.publication",label:"Publication",en:"publication",kind:"tri"},
+    {g:"Use",path:"use_case.research_only",label:"Research only",en:"research_only",kind:"tri"},
+    {g:"Use",path:"use_case.ai_training",label:"AI training",en:"ai_training",kind:"tri"},
+    {g:"Use",path:"use_case.secondary_use",label:"Secondary use",en:"secondary_use",kind:"tri"},
+    {g:"Use",path:"use_case.redistribute",label:"Redistribution",en:"redistribute",kind:"tri"},
+    {g:"Basis",path:"basis.consent_covers_use",label:"Consent covers this use",en:"consent_covers_use",kind:"tri"},
+    {g:"Basis",path:"basis.irb_status",label:"IRB status",en:"irb_status",kind:"sel",opts:"irb"},
+    {g:"Jurisdiction",path:"jurisdiction.regions",label:"Subject residence states",en:"regions",kind:"arr",wide:true,ph:"State names, comma-separated, e.g. California, Washington"},
+    {g:"Jurisdiction",path:"jurisdiction.countries",label:"Countries involved",en:"countries",kind:"arr",wide:true,ph:"Comma-separated, e.g. United States"}
+  ];
+  const GORD=["Data","Actor","Use","Basis","Jurisdiction"];
+
+  function getPath(o,p){return p.split(".").reduce((a,k)=>a==null?undefined:a[k],o);}
+  function setPath(o,p,v){const ks=p.split(".");let c=o;for(let i=0;i<ks.length-1;i++){if(c[ks[i]]==null||typeof c[ks[i]]!=="object")c[ks[i]]={};c=c[ks[i]];}c[ks[ks.length-1]]=v;}
+  function syncAssistantCard(){
+    const a=document.querySelector(".col-right>.card"),i=$("#intake");if(!a||!i)return;
+    if(matchMedia("(max-width:1120px)").matches){a.style.minHeight="";return;}
+    const max=Math.max(260,innerHeight-108);
+    a.style.minHeight=Math.round(Math.min(i.getBoundingClientRect().height,max))+"px";
+  }
+  addEventListener("resize",syncAssistantCard);
+  addEventListener("load",syncAssistantCard);
+  syncAssistantCard();
+  function growTextarea(ta,maxPx){
+    if(!ta)return;
+    ta.style.height="auto";
+    const target=maxPx?Math.min(ta.scrollHeight,maxPx):ta.scrollHeight;
+    ta.style.height=target+"px";
+    ta.style.overflowY=maxPx&&ta.scrollHeight>maxPx?"auto":"hidden";
+    syncAssistantCard();
+  }
+  function bindAutoGrow(sel,maxPx){
+    const ta=$(sel);if(!ta)return;
+    const run=()=>growTextarea(ta,maxPx);
+    ta.addEventListener("input",run);
+    addEventListener("resize",run);
+    run();
+  }
+  bindAutoGrow("#scopeIn",0);
+  bindAutoGrow("#rightIn",0);
+
+  /* Header status, theme, and settings. */
+  $("#themeBtn").onclick=()=>{const cur=document.documentElement.getAttribute("data-theme");
+    const dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+    document.documentElement.setAttribute("data-theme",dark?"light":"dark");};
+  const helpModal=$("#helpModal");
+  $("#helpBtn").onclick=()=>helpModal.classList.add("on");
+  $("#helpClose").onclick=()=>helpModal.classList.remove("on");
+  helpModal.addEventListener("click",e=>{if(e.target===helpModal)helpModal.classList.remove("on");});
+
+  /* Stage 1: extract facts and render the review card. */
+  let currentFacts=null;
+  $("#startBtn").onclick=startCheck;
+  $("#scopeIn").addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key==="Enter")startCheck();});
+  function scenarioText(){
+    const parts=[];
+    const box=$("#scopeIn").value.trim(); if(box)parts.push(box);
+    rightHistory.forEach(h=>{if(h.role==="user")parts.push(h.content);});
+    return parts.join("\n");
+  }
+  function startCheck(){
+    const text=scenarioText().trim(); if(!text){$("#scopeIn").focus();return;}
+    const btn=$("#startBtn");btn.disabled=true;
+    clearAfterIntake();
+    const c=el("section","block");c.id="loadingCard";
+    c.innerHTML='<div class="load"><div class="spin"></div><div><div style="font-family:var(--serif);font-weight:600;font-size:16px">Extracting structured facts...</div><p class="sub" style="margin-top:5px;font-size:13px">The system is converting the scenario into reviewable structured fields.</p></div></div>';
+    $("#thread").appendChild(c);
+    fetch("/api/datause/extract",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text})})
+      .then(async r=>{const j=await r.json();if(!r.ok)throw new Error(j.detail||("HTTP "+r.status));return j;})
+      .then(d=>{currentFacts=d.facts||{};renderCard(d.understanding||"",d.facts||{});})
+      .catch(e=>{errCard(e.message);})
+      .finally(()=>{btn.disabled=false;});
+  }
+  function clearAfterIntake(){document.querySelectorAll("#thread .block").forEach(n=>n.remove());$("#foot").hidden=true;hasReport=false;rightCtx="";}
+  function errCard(msg){const x=document.getElementById("loadingCard")||el("section","block");x.id="";x.innerHTML='<p class="err">Request failed: '+esc(msg)+'</p><p class="sub" style="margin-top:8px">If the API key has not been configured, add it in Settings and retry.</p>';if(!x.parentNode)$("#thread").appendChild(x);}
+
+  function ctrlHTML(f){
+    if(f.kind==="tri") return '<select data-p="'+f.path+'"><option value="">Unknown</option><option value="true">Yes</option><option value="false">No</option></select>';
+    if(f.kind==="sel"){return '<select data-p="'+f.path+'">'+OPT[f.opts].map(o=>'<option value="'+o[0]+'">'+esc(o[1])+'</option>').join("")+'</select>';}
+    if(f.kind==="arr") return '<input type="text" data-p="'+f.path+'" placeholder="'+esc(f.ph||"")+'" />';
+    if(f.kind==="tags") return '<div class="tags" data-p="'+f.path+'">'+CATS.map(c=>'<span class="tag" data-v="'+c[0]+'">'+esc(c[1])+'</span>').join("")+'</div>';
+    return '<input type="text" data-p="'+f.path+'" />';
+  }
+  function renderCard(understanding,facts){
+    const card=el("section","block");
+    card.innerHTML='<p class="eyebrow">Fact Confirmation</p><h2 class="q" style="font-size:20px">Review the extracted factual elements</h2>'
+      +(understanding?'<p class="sub" style="margin-top:6px">'+esc(understanding)+'</p>':'')
+      +'<p class="hint" style="margin-top:8px">Highlighted fields were extracted from the scenario. Review and correct each item before assessment; the preliminary result depends on these factual elements.</p>';
+    const scg=el("div","scg");
+    GORD.forEach(g=>{
+      const grp=el("div","sgrp");grp.innerHTML='<div class="gh">'+esc(g)+'</div>';
+      const grid=el("div","fgrid");
+      FIELDS.filter(f=>f.g===g).forEach(f=>{
+        const w=el("div","field"+(f.wide?" wide":""));
+        w.innerHTML='<label>'+esc(f.label)+' <span class="en">'+esc(f.en)+'</span></label>'+ctrlHTML(f);
+        grid.appendChild(w);
+      });
+      grp.appendChild(grid);scg.appendChild(grp);
+    });
+    card.appendChild(scg);
+    const foot=el("div","cardfoot");
+    foot.innerHTML='<button class="btn" data-run>Confirm facts and generate assessment</button><span class="hint">The system will compare the facts against primary sources. Estimated time: 30-120 seconds.</span>';
+    card.appendChild(foot);
+    const old=document.getElementById("loadingCard");if(old)old.remove();
+    $("#thread").appendChild(card);
+    fillCard(card,facts);
+    card.querySelector("[data-run]").onclick=()=>runAssess(card);
+    card.querySelectorAll(".tag").forEach(t=>t.onclick=()=>t.classList.toggle("on"));
+    // Once the user touches a field, treat it as reviewed and remove extraction highlighting.
+    card.querySelectorAll("[data-p]").forEach(node=>{const fld=node.closest(".field");const clear=()=>fld&&fld.classList.remove("ai");
+      if(node.classList.contains("tags"))node.addEventListener("click",e=>{if(e.target.classList.contains("tag"))clear();});
+      else{node.addEventListener("change",clear);node.addEventListener("input",clear);}});
+    card.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  function fillCard(card,facts){
+    FIELDS.forEach(f=>{
+      const v=getPath(facts,f.path);const node=card.querySelector('[data-p="'+f.path+'"]');if(!node)return;
+      const field=node.closest(".field");let filled=false;
+      if(f.kind==="tri"){node.value=v===true?"true":v===false?"false":"";filled=(v===true||v===false);}
+      else if(f.kind==="sel"){const val=(v==null?"":String(v));
+        // an extracted value the enum can't represent must still round-trip: inject an option for it
+        if(val&&!OPT[f.opts].some(o=>o[0]===val)){const ex=document.createElement("option");ex.value=val;ex.textContent=val+" (AI)";node.appendChild(ex);}
+        node.value=val;filled=!!val;}
+      else if(f.kind==="arr"){const a=Array.isArray(v)?v:[];node.value=a.join(", ");filled=a.length>0;}
+      else if(f.kind==="tags"){const a=Array.isArray(v)?v:[];const known=CATS.map(c=>c[0]);
+        // extracted categories outside CATS must not be silently dropped — add chips for them
+        a.filter(x=>known.indexOf(x)<0).forEach(x=>{const t=document.createElement("span");t.className="tag";t.dataset.v=x;t.textContent=x;node.appendChild(t);});
+        node.querySelectorAll(".tag").forEach(t=>t.classList.toggle("on",a.indexOf(t.dataset.v)>=0));filled=a.length>0;}
+      if(field)field.classList.toggle("ai",filled);
+    });
+  }
+  function collectCard(card){
+    const facts=JSON.parse(JSON.stringify(currentFacts||{}));
+    FIELDS.forEach(f=>{
+      const node=card.querySelector('[data-p="'+f.path+'"]');if(!node)return;
+      if(f.kind==="tri"||f.kind==="sel"){const val=node.value;setPath(facts,f.path,f.kind==="tri"?(val===""?null:val==="true"):(val===""?null:val));}
+      else if(f.kind==="arr"){setPath(facts,f.path,node.value.split(",").map(s=>s.trim()).filter(Boolean));}
+      else if(f.kind==="tags"){setPath(facts,f.path,[...node.querySelectorAll(".tag.on")].map(t=>t.dataset.v));}
+    });
+    return facts;
+  }
+
+  /* Stage 2: assess confirmed facts and render the report. */
+  function runAssess(card){
+    const facts=collectCard(card);currentFacts=facts;
+    const btn=card.querySelector("[data-run]");btn.disabled=true;
+    const load=el("section","block");load.id="assessLoad";
+    load.innerHTML='<div class="load"><div class="spin"></div><div><div style="font-family:var(--serif);font-weight:600;font-size:16px">Generating preliminary assessment...</div><p class="sub" style="margin-top:5px;font-size:13px">The process includes rule evaluation, source retrieval, and primary-source comparison. It usually takes 30-120 seconds.</p></div></div>';
+    $("#thread").appendChild(load);load.scrollIntoView({behavior:"smooth",block:"start"});
+    fetch("/api/datause/assess",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({facts})})
+      .then(async r=>{const j=await r.json();if(!r.ok)throw new Error(j.detail||("HTTP "+r.status));return j;})
+      .then(renderReport)
+      .catch(e=>{const l=document.getElementById("assessLoad");if(l)l.remove();errCard(e.message);})
+      .finally(()=>{btn.disabled=false;});
+  }
+
+  function vm(k,txt,have){return '<div class="vm'+(have?" have":"")+'"><span class="vmk">'+k+'</span><span>'+esc(txt)+'</span></div>';}
+  function positives(f){const o=[],c=f.object||{},b=f.basis||{};
+    if(["deidentified_hipaa_safeharbor","deidentified_expert","anonymized","aggregate"].indexOf(c.identifiability)>=0)o.push("Data is de-identified");
+    if(["approved","exempt"].indexOf(b.irb_status)>=0)o.push("IRB approval or exemption is in place");
+    if(c.has_dua===true)o.push("Data use agreement (DUA) is executed");if(c.license==="permissive")o.push("License permits the use");return o;}
+  function dedupe(a){const s=new Set(),o=[];a.forEach(x=>{const k=String(x).trim();if(!s.has(k)){s.add(k);o.push(x);}});return o;}
+
+  function renderReport(data){
+    const l=document.getElementById("assessLoad");if(l)l.remove();
+    document.querySelectorAll("#thread .block.report").forEach(n=>n.remove());   // re-run: clear the prior report first
+    const rep=data.report||{},facts=data.facts||{},retr=data.retrievals||[];
+    const matrix=rep.purpose_matrix||[],laws=rep.applicable_laws||[];
+
+    const hero=el("section","block report");hero.innerHTML='<p class="eyebrow">Preliminary Assessment</p>';
+    const grid=el("div","vgrid");
+    (matrix.length?matrix:[{purpose:"research",verdict:"insufficient"},{purpose:"commercial",verdict:"insufficient"}]).forEach(m=>{
+      const meta=PURPOSE[m.purpose]||{kick:"Purpose",name:m.purpose},v=VERDICT[m.verdict]||VERDICT.insufficient;
+      const bl=m.because_laws||[],bc=m.because_contract||[];
+      const basis=bl.map(id=>LAW_SHORT[id]||id).concat(bc.map(k=>OFF_SHORT[k]||k));
+      const need=dedupe(bl.map(id=>LAW_NEED[id]).filter(Boolean).concat(bc.map(k=>OFF_NEED[k]).filter(Boolean)));
+      const have=positives(facts);
+      let mh='<div class="vmeta">';
+      if(basis.length)mh+=vm("Basis",basis.join("; "));
+      if(need.length)mh+=vm("Required",need.join("; "));else if(m.verdict==="allowed")mh+=vm("Required","Attribute the source and comply with applicable terms.");
+      if(have.length)mh+=vm("Already met",have.join("; "),true);
+      mh+='</div>';
+      const p=el("div","vpanel "+v.tone);
+      p.innerHTML='<div class="vtop"><span class="vkick">'+esc(meta.kick)+'</span><span class="vname">'+esc(meta.name)+'</span>'+pill(v.tone,v.pill)+'</div>'
+        +'<p class="vline">'+esc(m.narration||v.line)+'</p>'+mh;
+      grid.appendChild(p);
+    });
+    hero.appendChild(grid);$("#thread").appendChild(hero);
+
+    const miss=rep.missing_information||[];
+    if(miss.length){const s=el("section","block report");s.innerHTML='<p class="eyebrow">Open Facts That May Affect the Assessment</p><p class="sub" style="margin:-6px 0 4px;font-size:13px">The following facts remain unclear. Completing them may change the assessment.</p>';
+      const ul=el("ul","list");miss.forEach(t=>ul.appendChild(el("li",null,'<span class="ld">?</span><span>'+esc(t)+'</span>')));s.appendChild(ul);$("#thread").appendChild(s);}
+
+    const cites=[];retr.forEach(x=>(x.obligations||[]).forEach(o=>{if(o.verify_url)cites.push({law:x.law,...o});}));
+    if(cites.length){const s=el("section","block report");s.innerHTML='<p class="eyebrow">Assessment Basis · Evaluated Sources</p><p class="sub" style="margin:-6px 0 6px;font-size:13px">These sources were checked against the confirmed facts and used to support the preliminary assessment above.</p>';
+      const wrap=el("div","tbl-wrap"),bx=el("div");
+      cites.forEach(o=>{bx.appendChild(el("div","src",'<div class="st">'+esc(o.obligation||"")+'</div>'
+        +'<div class="metaline"><span style="color:var(--ink3)">'+esc(o.law||"")+'</span> · <span class="cite">'+esc(o.citation||"")+'</span>'
+        +(safeUrl(o.verify_url)?' · <a href="'+esc(safeUrl(o.verify_url))+'" target="_blank" rel="noopener">Source ↗</a>':'')+'</div>'
+        +(o.verify_status==="verified"&&o.quote?'<div class="quote">“'+esc(o.quote)+'”</div>':'')));});
+      wrap.appendChild(bx);s.appendChild(wrap);$("#thread").appendChild(s);}
+
+    $("#thread").appendChild(detailsBlock(data,facts,laws,retr));
+
+    const foot=$("#foot");foot.hidden=false;
+    foot.innerHTML=(rep.disclaimers||[]).map(d=>"<p>"+esc(d)+"</p>").join("")+'<p style="opacity:.85">'+esc(rep.coverage_note||"")+"</p>";
+    activateRight(buildContext(data));
+    hero.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+
+  function detailsBlock(data,facts,laws,retr){
+    const d=el("details","block report");d.innerHTML='<summary><span class="chev">▸</span>View all retrieved authorities and decision details</summary>';
+    const b=el("div","dbody");
+    b.appendChild(el("div",null,'<p class="eyebrow" style="margin-bottom:8px">Facts Used for Assessment (System-Extracted; Human Review Required)</p><div class="facts">'+esc(data.facts_summary||"")+'</div>'));
+    const lw=el("div",null,'<p class="eyebrow" style="margin-bottom:6px">Potentially Relevant Laws</p>');
+    laws.forEach(l=>{const st={applies:["warn","Applies"],likely_exempt:["good","Likely exempt"],need_info:["caution","Need info"],not_applicable:["neutral","Not applicable"]}[l.status]||["neutral",l.status];
+      lw.appendChild(el("div","lrow",'<div style="min-width:0"><div>'+esc(l.name)+'</div><div class="lr2">'+esc(l.reason||"")+'</div></div>'+pill(st[0],st[1])));});
+    b.appendChild(lw);
+    const anyOb=retr.some(x=>(x.obligations||[]).length);
+    if(anyOb){const v=el("div",null,'<p class="eyebrow" style="margin-bottom:6px">All Retrieved Obligations and Source Text</p>');const w=el("div","tbl-wrap"),bx=el("div");
+      retr.forEach(x=>(x.obligations||[]).forEach(o=>{bx.appendChild(el("div","src",'<div class="st">'+esc(o.obligation||"")+'</div>'
+        +'<div class="metaline"><span style="color:var(--ink3)">'+esc(x.law||"")+'</span> · <span class="cite">'+esc(o.citation||"")+'</span>'
+        +(safeUrl(o.verify_url)?' · <a href="'+esc(safeUrl(o.verify_url))+'" target="_blank" rel="noopener">Source ↗</a>':'')+'</div>'
+        +(o.verify_status==="verified"&&o.quote?'<div class="quote">“'+esc(o.quote)+'”</div>':'')));}));
+      w.appendChild(bx);v.appendChild(w);b.appendChild(v);}
+    const sr=data.source_research||{},leads=Array.isArray(sr.leads)?sr.leads:[];
+    if(leads.length){
+      const v=el("div",null,'<p class="eyebrow" style="margin-bottom:6px">Other Sources Found During Research</p><p class="sub" style="margin:-2px 0 8px;font-size:13px">These sources were discovered as potentially relevant. They are shown for transparency and separate review; they did not change the preliminary assessment above.</p>');
+      const ul=el("ul","list");
+      const label={can_enter_assessment:["good","Structured candidate"],needs_more_facts:["caution","Needs more facts"],do_not_use:["neutral","Not used"]};
+      leads.forEach(e=>{
+        const rule=e.rule||{},val=e.validation||{},st=label[rule.evaluation_status]||["neutral","Review separately"];
+        const missing=Array.isArray(rule.missing_facts)&&rule.missing_facts.length?'<div class="why">Missing facts: '+esc(rule.missing_facts.slice(0,3).join("; "))+'</div>':"";
+        ul.appendChild(el("li",null,'<span class="ld">▸</span><span><b>'+esc(e.title||"")+'</b> '+pill(st[0],st[1])
+          +(e.citation?' <span class="cite">'+esc(e.citation)+'</span>':'')
+          +(safeUrl(e.source_url)?' · <a href="'+esc(safeUrl(e.source_url))+'" target="_blank" rel="noopener">Source ↗</a>':'')
+          +(e.why_may_matter?'<div class="why">'+esc(e.why_may_matter)+'</div>':'')
+          +(rule.status_reason?'<div class="why">'+esc(rule.status_reason)+'</div>':'')
+          +missing
+          +(val.quote?'<div class="quote">“'+esc(val.quote)+'”</div>':'')+'</span>'));
+      });
+      v.appendChild(ul);b.appendChild(v);
+    }
+    if(retr.some(x=>(x.reasoning||"").trim())){const sub=el("details","mini");sub.innerHTML='<summary><span class="chev">▸</span>Model reasoning notes (audit use)</summary>';const sb=el("div","dbody");
+      retr.forEach(x=>{if(!(x.reasoning||"").trim())return;const h=el("div");h.innerHTML='<div style="font-family:var(--serif);font-weight:600;font-size:14px">'+esc(x.law)+'</div><p class="sub" style="margin-top:4px;font-size:12.5px">'+esc(x.reasoning)+'</p>';sb.appendChild(h);});
+      sub.appendChild(sb);b.appendChild(sub);}
+    d.appendChild(b);return d;
+  }
+
+  function buildContext(data){const rep=data.report||{},ap=(rep.applicable_laws||[]).filter(l=>l.status==="applies"),ob=[];
+    (data.retrievals||[]).forEach(x=>(x.obligations||[]).forEach(o=>{if(o.verify_url)ob.push((o.citation||"")+": "+o.obligation);}));
+    const mx=(rep.purpose_matrix||[]).map(m=>((PURPOSE[m.purpose]||{}).name||m.purpose)+" = "+((VERDICT[m.verdict]||{}).pill||m.verdict)+" ("+(m.narration||"")+")").join("; ");
+    const ex=((data.source_research||{}).leads||[]).map(e=>e.title).filter(Boolean);
+    return "Scenario facts: "+(data.facts_summary||"")+"\nConclusion: "+mx+"\nApplicable laws: "+(ap.map(l=>l.name).join(", ")||"None")
+      +"\nAssessment basis (primary-source references): "+(ob.slice(0,8).join(" / ")||"None")
+      +"\nOther sources discovered but not used to change this assessment: "+(ex.join(", ")||"None")
+      +"\nStill missing: "+((rep.missing_information||[]).join("; ")||"None");}
+
+  /* Right panel assistant: fact review before assessment, rationale follow-up after assessment. */
+  let hasReport=false,rightCtx="",rightHistory=[];
+  function assistantHTML(text){
+    let s=esc(text||"");
+    s=s.replace(/`([^`]+)`/g,"<code>$1</code>");
+    s=s.replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>");
+    s=s.replace(/(^|\n)#{1,6}\s*/g,"$1");
+    s=s.replace(/(^|\n)\s*[-*]\s+/g,"$1• ");
+    const paras=s.split(/\n{2,}/).map(p=>"<p>"+p.replace(/\n/g,"<br>")+"</p>");
+    return paras.join("");
+  }
+  function activateRight(ctx){hasReport=true;rightCtx=ctx;$("#rightIntro").style.display="none";
+    const m=el("div","msg ai");m.innerHTML=assistantHTML("The preliminary assessment has been loaded. You may ask follow-up questions about the rationale.");$("#rightMsgs").appendChild(m);m.scrollIntoView({block:"nearest"});}
+  function rightMsg(cls,text){const m=el("div","msg "+cls);if(cls.indexOf("ai")>=0)m.innerHTML=assistantHTML(text);else m.textContent=text;$("#rightMsgs").appendChild(m);return m;}
+  $("#rightSend").onclick=()=>{
+    const ta=$("#rightIn"),q=(ta.value||"").trim();if(!q)return;
+    $("#rightIntro").style.display="none";
+    ta.value="";growTextarea(ta,0);$("#rightSend").disabled=true;rightMsg("user",q);rightHistory.push({role:"user",content:q});
+    const think=rightMsg("ai think","Generating a response...");
+    const url=hasReport?"/api/datause/chat":"/api/datause/scope";
+    const payload=hasReport?{context:rightCtx,history:rightHistory.slice(0,-1),question:q}:{history:rightHistory.slice(0,-1),question:q};
+    fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)})
+      .then(async r=>{const j=await r.json();if(!r.ok)throw new Error(j.detail||("HTTP "+r.status));return j;})
+      .then(j=>{think.className="msg ai";think.innerHTML=assistantHTML(j.answer||"(No response.)");rightHistory.push({role:"assistant",content:j.answer||""});})
+      .catch(e=>{think.className="msg ai";think.innerHTML='<span class="err">Request failed: '+esc(e.message)+'</span>';})
+      .finally(()=>{$("#rightSend").disabled=false;think.scrollIntoView({block:"nearest"});});
+  };
+  $("#rightIn").addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key==="Enter")$("#rightSend").click();});
+
+  /* Settings. */
+  const modal=$("#modal");
+  $("#setBtn").onclick=()=>fetch("/api/settings").then(r=>r.json()).then(s=>{
+    const sel=$("#sProvider");sel.innerHTML="";(s.providers||[]).forEach(p=>{const o=el("option");o.value=p.id;o.textContent=p.label;sel.appendChild(o);});
+    const b=s.backend||{};sel.value=b.provider||"deepseek";$("#sEndpoint").value=b.endpoint||"";$("#sModel").value=b.model||"";
+    $("#sKey").value="";$("#sKey").placeholder=b.has_key?("Saved "+(b.key_hint||"••••")):"Enter API key";$("#sMsg").textContent="";modal.classList.add("on");});
+  $("#sClose").onclick=()=>modal.classList.remove("on");
+  modal.addEventListener("click",e=>{if(e.target===modal)modal.classList.remove("on");});
+  $("#sSave").onclick=()=>{const body=new URLSearchParams({provider:$("#sProvider").value,endpoint:$("#sEndpoint").value,model:$("#sModel").value,api_key:$("#sKey").value});
+    fetch("/api/settings",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body}).then(r=>r.json()).then(()=>{$("#sMsg").textContent="Settings saved.";$("#sKey").value="";}).catch(e=>{$("#sMsg").innerHTML='<span class="err">Save failed: '+esc(e.message)+'</span>';});};
+  $("#sClear").onclick=()=>{if(!confirm("Clear the API key saved on this Mac?"))return;
+    fetch("/api/settings/clear_key",{method:"POST"}).then(r=>r.json()).then(s=>{$("#sKey").value="";$("#sKey").placeholder=(s.backend&&s.backend.has_key)?("Saved "+(s.backend.key_hint||"••••")):"Enter API key";$("#sMsg").textContent=(s.backend&&s.backend.has_key)?"Stored key cleared. An environment-provided key is still active.":"Saved API key cleared.";}).catch(e=>{$("#sMsg").innerHTML='<span class="err">Clear failed: '+esc(e.message)+'</span>';});};
+  $("#sTest").onclick=()=>{$("#sMsg").textContent="Testing connection...";fetch("/api/test_connection",{method:"POST"}).then(r=>r.json()).then(d=>{$("#sMsg").innerHTML=d.ok?'Connection test passed · sample: '+esc(String(d.sample||"").slice(0,30)):'<span class="err">Connection test failed: '+esc(d.error||"")+'</span>';});};
+})();
+</script>
+</body>
+</html>

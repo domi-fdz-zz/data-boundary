@@ -1,0 +1,54 @@
+[
+  {
+    "evidence_id": "EV-GEO-TERMS-001",
+    "title": "GEO database terms and dataset access information",
+    "source_type": "database_terms",
+    "jurisdiction": "global",
+    "authority": "NCBI GEO",
+    "url": "https://www.ncbi.nlm.nih.gov/geo/",
+    "citation": "NCBI Gene Expression Omnibus",
+    "effective_date": null,
+    "last_checked_at": "2026-07-07",
+    "excerpt": "Placeholder evidence for GEO public dataset access and terms review.",
+    "reliability": "database_terms"
+  },
+  {
+    "evidence_id": "EV-HUMAN-DATA-USE-001",
+    "title": "Human omics data use review placeholder",
+    "source_type": "regulatory_principle",
+    "jurisdiction": "global",
+    "authority": "placeholder",
+    "url": null,
+    "citation": "Placeholder: consent, privacy, and data-use limitation review",
+    "effective_date": null,
+    "last_checked_at": "2026-07-07",
+    "excerpt": "Human individual-level or derived omics data should be reviewed for consent, privacy status, and data-use restrictions.",
+    "reliability": "fixture_placeholder"
+  },
+  {
+    "evidence_id": "EV-CN-HGR-001",
+    "title": "China human genetic resources review placeholder",
+    "source_type": "regulation_placeholder",
+    "jurisdiction": "China",
+    "authority": "MOST / China HGR framework",
+    "url": null,
+    "citation": "Placeholder: China human genetic resources rules",
+    "effective_date": null,
+    "last_checked_at": "2026-07-07",
+    "excerpt": "Human genetic resource information involving Chinese human samples may require review when provided abroad or opened externally.",
+    "reliability": "fixture_placeholder"
+  },
+  {
+    "evidence_id": "EV-CLINICAL-USE-001",
+    "title": "Clinical use review placeholder",
+    "source_type": "regulation_placeholder",
+    "jurisdiction": "United States / China",
+    "authority": "placeholder",
+    "url": null,
+    "citation": "Placeholder: clinical screening, diagnostic, laboratory, and device pathway review",
+    "effective_date": null,
+    "last_checked_at": "2026-07-07",
+    "excerpt": "Clinical screening or diagnostic claims may trigger additional validation, laboratory, medical device, and privacy requirements.",
+    "reliability": "fixture_placeholder"
+  }
+]

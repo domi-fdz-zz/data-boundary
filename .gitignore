@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+
+# macOS / editor
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Local app state and automation logs
+.memsearch/
+.playwright-mcp/
+tasks/
+
+# Build and release artifacts
+build/
+dist/
+release/
+*.dmg
+*.app/
+*.spec
+*.zip
+SHA256SUMS.txt
+
+# Local scratch files and screenshots
+111.md
+111.pdf
+*.png
+*.log
+
+# Secrets and local configuration
+.env
+.env.*
+*.key
+*.pem
+*.p12
+config.json

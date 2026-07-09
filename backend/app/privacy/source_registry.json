@@ -1,0 +1,185 @@
+{
+  "_note": "Whitelist of authoritative PRIMARY sources. reliability=official_primary means statute/regulation text from an official publisher. Citations/effective dates were web-verified in the scope-research pass (2026-07); last_checked marks that. A future retrieval agent may ONLY fetch from these URLs.",
+  "sources": [
+    {
+      "source_id": "ccpa-statute",
+      "law_id": "ccpa",
+      "name": "California Consumer Privacy Act / CPRA (statute)",
+      "citation": "Cal. Civ. Code §§ 1798.100–1798.199.100",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displayText.xhtml?division=3.&part=4.&lawCode=CIV&title=1.81.5",
+      "effective_date": "2020-01-01 (CPRA amendments operative 2023-01-01)",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    },
+    {
+      "source_id": "ccpa-regs",
+      "law_id": "ccpa",
+      "name": "CPPA Regulations",
+      "citation": "Cal. Code Regs. tit. 11, §§ 7000–7304",
+      "url": "https://cppa.ca.gov/regulations/",
+      "effective_date": "amended regs phasing in from 2026-01-01",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    },
+    {
+      "source_id": "vcdpa-statute",
+      "law_id": "vcdpa",
+      "name": "Virginia Consumer Data Protection Act (template for the VCDPA family)",
+      "citation": "Va. Code §§ 59.1-575 to 59.1-585",
+      "url": "https://law.lis.virginia.gov/vacodefull/title59.1/chapter53/",
+      "effective_date": "2023-01-01",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    },
+    {
+      "source_id": "hipaa-rules",
+      "law_id": "hipaa",
+      "name": "HIPAA Privacy/Security/Breach Rules (operative CFR)",
+      "citation": "45 CFR Parts 160, 162, 164 (de-identification at 45 CFR 164.514(b))",
+      "url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164",
+      "effective_date": "Privacy Rule 2003; HITECH amendments 2013",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    },
+    {
+      "source_id": "hipaa-statute",
+      "law_id": "hipaa",
+      "name": "HIPAA / HITECH authorizing statute",
+      "citation": "Pub. L. 104-191; 42 U.S.C. § 1320d et seq.",
+      "url": "https://www.govinfo.gov/app/details/USCODE-2022-title42/USCODE-2022-title42-chap7-subchapXI-partC",
+      "effective_date": "1996",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    },
+    {
+      "source_id": "coppa-rule",
+      "law_id": "coppa",
+      "name": "COPPA Rule (operative CFR)",
+      "citation": "16 CFR Part 312",
+      "url": "https://www.ecfr.gov/current/title-16/chapter-I/subchapter-C/part-312",
+      "effective_date": "2013; amended 2025 (compliance 2026)",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    },
+    {
+      "source_id": "coppa-statute",
+      "law_id": "coppa",
+      "name": "COPPA authorizing statute",
+      "citation": "15 U.S.C. §§ 6501–6506",
+      "url": "https://www.govinfo.gov/app/details/USCODE-2022-title15/USCODE-2022-title15-chap91",
+      "effective_date": "1998",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    },
+    {
+      "source_id": "ferpa-statute",
+      "law_id": "ferpa",
+      "name": "FERPA authorizing statute",
+      "citation": "20 U.S.C. § 1232g",
+      "url": "https://www.govinfo.gov/app/details/USCODE-2022-title20/USCODE-2022-title20-chap31-subchapIII-part4-sec1232g",
+      "effective_date": "1974",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    },
+    {
+      "source_id": "ferpa-regs",
+      "law_id": "ferpa",
+      "name": "FERPA regulations (operative CFR)",
+      "citation": "34 CFR Part 99",
+      "url": "https://www.ecfr.gov/current/title-34/subtitle-A/part-99",
+      "effective_date": "current",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    },
+    {
+      "source_id": "glba-statute",
+      "law_id": "glba",
+      "name": "GLBA authorizing statute (Financial Privacy + Safeguards)",
+      "citation": "15 U.S.C. §§ 6801–6809, 6821–6827",
+      "url": "https://www.govinfo.gov/app/details/USCODE-2022-title15/USCODE-2022-title15-chap94",
+      "effective_date": "1999",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    },
+    {
+      "source_id": "glba-reg-p",
+      "law_id": "glba",
+      "name": "GLBA Privacy Rule (Regulation P, CFPB)",
+      "citation": "12 CFR Part 1016",
+      "url": "https://www.ecfr.gov/current/title-12/chapter-X/part-1016",
+      "effective_date": "current",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    },
+    {
+      "source_id": "common-rule",
+      "law_id": "common_rule",
+      "name": "Common Rule — federal human-subjects protection (IRB)",
+      "citation": "45 CFR Part 46 (2018 revised Common Rule; exemptions at 46.104)",
+      "url": "https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-A/part-46",
+      "effective_date": "2019-01-21",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    },
+    {
+      "source_id": "fda-human-subjects",
+      "law_id": "fda_human_subjects",
+      "name": "FDA human-subjects rules (informed consent + IRB)",
+      "citation": "21 CFR Parts 50 & 56",
+      "url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-A/part-50",
+      "effective_date": "current",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    },
+    {
+      "source_id": "bipa",
+      "law_id": "bipa",
+      "name": "Illinois Biometric Information Privacy Act",
+      "citation": "740 ILCS 14",
+      "url": "https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=3004",
+      "effective_date": "2008",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    },
+    {
+      "source_id": "wa-mhmda",
+      "law_id": "wa_mhmda",
+      "name": "Washington My Health My Data Act (consumer health data)",
+      "citation": "RCW 19.373",
+      "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=19.373",
+      "effective_date": "2024-03-31",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    },
+    {
+      "source_id": "gina",
+      "law_id": "gina",
+      "name": "Genetic Information Nondiscrimination Act",
+      "citation": "Pub. L. 110-233 (Title I health insurance; Title II employment)",
+      "url": "https://www.govinfo.gov/app/details/PLAW-110publ233",
+      "effective_date": "2008",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    },
+    {
+      "source_id": "ftc-act-5",
+      "law_id": "ftc_act_5",
+      "name": "FTC Act Section 5 (unfair or deceptive acts/practices — catch-all)",
+      "citation": "15 U.S.C. § 45",
+      "url": "https://www.ecfr.gov/current/title-16/chapter-I",
+      "effective_date": "1914 (privacy enforcement ongoing)",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    },
+    {
+      "source_id": "vppa",
+      "law_id": "vppa",
+      "name": "Video Privacy Protection Act",
+      "citation": "18 U.S.C. § 2710",
+      "url": "https://www.govinfo.gov/app/details/USCODE-2022-title18/USCODE-2022-title18-partI-chap121-sec2710",
+      "effective_date": "1988",
+      "reliability": "official_primary",
+      "last_checked_at": "2026-07-07"
+    }
+  ]
+}

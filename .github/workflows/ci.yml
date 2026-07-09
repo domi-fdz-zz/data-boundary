@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: Backend tests and release hygiene
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pytest
+
+      - name: Run tests
+        working-directory: backend
+        run: python -m pytest -q
+
+      - name: Validate packaged HTML asset
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+
+          html = Path("backend/app/data/datause.html").read_text(encoding="utf-8")
+
+          class Parser(HTMLParser):
+              pass
+
+          Parser().feed(html)
+          required = [
+              "Data Boundary",
+              "Describe the proposed data use",
+              "Fact Review",
+          ]
+          missing = [item for item in required if item not in html]
+          if missing:
+              raise SystemExit(f"missing UI text: {missing}")
+          PY
+
+      - name: Check for files that must not be committed
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          banned_names = {".DS_Store", ".pytest_cache", "__pycache__"}
+          banned_dirs = {".playwright-mcp", ".memsearch", "dist", "build", "release"}
+          offenders = []
+          for path in Path(".").rglob("*"):
+              rel = path.as_posix()
+              parts = set(path.parts)
+              if ".git" in parts:
+                  continue
+              if path.name in banned_names or parts & banned_dirs:
+                  offenders.append(rel)
+          if offenders:
+              raise SystemExit("non-release files found:\n" + "\n".join(sorted(offenders)[:80]))
+          PY
+
+      - name: Check for obvious committed secrets
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+
+          secret_patterns = [
+              re.compile(r"sk-[A-Za-z0-9_-]{20,}"),
+              re.compile(r"Bearer\s+[A-Za-z0-9._-]{20,}"),
+              re.compile(r'"api_key"\s*:\s*"[^"<>\s][^"]{12,}"'),
+          ]
+          offenders = []
+          for path in Path(".").rglob("*"):
+              if not path.is_file() or ".git" in path.parts:
+                  continue
+              if any(part in {"build", "dist", "release", ".pytest_cache", "__pycache__", ".playwright-mcp"} for part in path.parts):
+                  continue
+              try:
+                  text = path.read_text(encoding="utf-8")
+              except UnicodeDecodeError:
+                  continue
+              for pat in secret_patterns:
+                  if pat.search(text):
+                      offenders.append(path.as_posix())
+                      break
+          if offenders:
+              raise SystemExit("possible secrets found:\n" + "\n".join(sorted(offenders)))
+          PY
