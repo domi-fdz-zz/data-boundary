@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 VERSION="${VERSION:-v0.1.0-alpha.1}"
 APP_NAME="Data Boundary"
+DMG_ASSET_NAME="Data.Boundary.dmg"
 PKG_NAME="Data-Boundary-${VERSION#v}"
 RELEASE_ROOT="$ROOT/release/github"
 SOURCE_STAGE="$RELEASE_ROOT/$PKG_NAME"
@@ -52,10 +53,10 @@ chmod +x "$SOURCE_STAGE/scripts/package_macos_dmg.sh" || true
 chmod +x "$SOURCE_STAGE/scripts/prepare_github_release.sh" || true
 
 if [[ -f "$DMG_PATH" ]]; then
-  cp "$DMG_PATH" "$ASSETS_DIR/${APP_NAME}.dmg"
+  cp "$DMG_PATH" "$ASSETS_DIR/$DMG_ASSET_NAME"
   (
     cd "$ASSETS_DIR"
-    shasum -a 256 "${APP_NAME}.dmg" > SHA256SUMS.txt
+    shasum -a 256 "$DMG_ASSET_NAME" > SHA256SUMS.txt
   )
 else
   echo "Warning: DMG not found at $DMG_PATH. Run scripts/package_macos_dmg.sh first." >&2
