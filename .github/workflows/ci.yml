@@ -54,13 +54,15 @@ jobs:
       - name: Check for files that must not be committed
         run: |
           python - <<'PY'
+          import subprocess
           from pathlib import Path
 
           banned_names = {".DS_Store", ".pytest_cache", "__pycache__"}
           banned_dirs = {".playwright-mcp", ".memsearch", "dist", "build", "release"}
           offenders = []
-          for path in Path(".").rglob("*"):
-              rel = path.as_posix()
+          tracked = subprocess.check_output(["git", "ls-files"], text=True).splitlines()
+          for rel in tracked:
+              path = Path(rel)
               parts = set(path.parts)
               if ".git" in parts:
                   continue
@@ -74,6 +76,7 @@ jobs:
         run: |
           python - <<'PY'
           import re
+          import subprocess
           from pathlib import Path
 
           secret_patterns = [
@@ -82,7 +85,9 @@ jobs:
               re.compile(r'"api_key"\s*:\s*"[^"<>\s][^"]{12,}"'),
           ]
           offenders = []
-          for path in Path(".").rglob("*"):
+          tracked = subprocess.check_output(["git", "ls-files"], text=True).splitlines()
+          for rel in tracked:
+              path = Path(rel)
               if not path.is_file() or ".git" in path.parts:
                   continue
               if any(part in {"build", "dist", "release", ".pytest_cache", "__pycache__", ".playwright-mcp"} for part in path.parts):
