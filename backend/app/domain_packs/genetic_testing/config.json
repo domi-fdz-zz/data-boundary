@@ -1,0 +1,14 @@
+{
+  "id": "genetic_testing",
+  "name": "Human Genetic Testing",
+  "version": "0.1.0",
+  "status": "stub",
+  "supported_object_types": ["genetic_test", "screening_test"],
+  "supported_sources": [],
+  "metadata_signals": [],
+  "field_map": {},
+  "required_fields": [],
+  "stub_verdict": "insufficient_information",
+  "stub_risk_level": "high",
+  "stub_summary": "Human genetic testing requires review of research vs clinical use, laboratory qualifications, privacy, consent, and jurisdiction-specific rules. This is a v0.1 stub pack: it routes correctly but does not yet apply detailed rules."
+}

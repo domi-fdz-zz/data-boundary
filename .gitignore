@@ -46,3 +46,4 @@ SHA256SUMS.txt
 *.pem
 *.p12
 config.json
+!backend/app/domain_packs/**/config.json

@@ -1,0 +1,114 @@
+{
+  "id": "biodata",
+  "name": "BioData / GEO / DEA",
+  "version": "0.1.0",
+  "status": "active",
+  "supported_object_types": [
+    "dataset",
+    "omics_dataset",
+    "gene_expression_dataset",
+    "rnaseq_dataset",
+    "microarray_dataset",
+    "processed_expression_matrix"
+  ],
+  "supported_sources": [
+    "geo",
+    "ncbi geo",
+    "gene expression omnibus"
+  ],
+  "metadata_signals": [
+    "organism",
+    "data_type",
+    "data_level",
+    "sample_origin"
+  ],
+  "field_map": {
+    "organism": "object.metadata.organism",
+    "data_type": "object.metadata.data_type",
+    "data_level": "object.metadata.data_level",
+    "sample_origin": "object.metadata.sample_origin",
+    "use_case_category": "use_case.category",
+    "research_only": "use_case.research_only",
+    "commercial": "use_case.commercial",
+    "clinical": "use_case.clinical",
+    "ai_training": "use_case.ai_training",
+    "publication": "use_case.publication",
+    "cross_border": "data_flow.cross_border",
+    "processing_location": "data_flow.processing_location",
+    "cloud_processing": "data_flow.cloud_processing",
+    "external_sharing": "data_flow.external_sharing",
+    "actor.country": "actor.country",
+    "data_use_limitations": "object.metadata.data_use_limitations"
+  },
+  "required_fields": [
+    {
+      "field": "object.metadata.organism",
+      "alias": "organism",
+      "severity": "high",
+      "message": "Organism is required to decide human vs non-human handling and to apply the right rules."
+    },
+    {
+      "field": "object.metadata.data_type",
+      "alias": "data_type",
+      "severity": "medium",
+      "message": "Data type (e.g. RNA-seq, microarray) is needed to characterize the dataset."
+    },
+    {
+      "field": "object.metadata.data_level",
+      "alias": "data_level",
+      "severity": "low",
+      "message": "Data level (raw vs processed matrix) affects privacy / consent exposure."
+    },
+    {
+      "field": "object.metadata.sample_origin",
+      "alias": "sample_origin",
+      "severity": "high",
+      "message": "Sample origin is unknown. This affects China HGR-related assessment.",
+      "missing_values": ["unknown"],
+      "when": { "organism": ["Homo sapiens", "human"] }
+    },
+    {
+      "field": "object.metadata.data_use_limitations",
+      "alias": "data_use_limitations",
+      "severity": "high",
+      "message": "Original consent and dataset data-use limitations are needed for commercial or clinical reuse assessment.",
+      "when": { "organism": ["Homo sapiens", "human"] }
+    },
+    {
+      "field": "use_case.commercial",
+      "alias": "commercial",
+      "severity": "medium",
+      "message": "Specify whether the use is commercial — it materially changes the applicable review."
+    },
+    {
+      "field": "use_case.clinical",
+      "alias": "clinical",
+      "severity": "medium",
+      "message": "Specify whether the use is clinical (screening / diagnostic) — it can trigger device / lab / validation review."
+    },
+    {
+      "field": "use_case.ai_training",
+      "alias": "ai_training",
+      "severity": "low",
+      "message": "Specify whether the data is used for AI / model training."
+    },
+    {
+      "field": "data_flow.cross_border",
+      "alias": "cross_border",
+      "severity": "medium",
+      "message": "Specify whether processing or sharing crosses borders."
+    },
+    {
+      "field": "data_flow.processing_location",
+      "alias": "processing_location",
+      "severity": "low",
+      "message": "Processing location affects cross-border and jurisdiction analysis."
+    },
+    {
+      "field": "actor.country",
+      "alias": "actor.country",
+      "severity": "medium",
+      "message": "Actor country affects which jurisdiction's rules apply."
+    }
+  ]
+}

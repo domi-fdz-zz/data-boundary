@@ -1,0 +1,14 @@
+{
+  "id": "agricultural_genomics",
+  "name": "Agricultural Genomics",
+  "version": "0.1.0",
+  "status": "stub",
+  "supported_object_types": ["agricultural_sample", "plant_dna", "crop_variety"],
+  "supported_sources": [],
+  "metadata_signals": [],
+  "field_map": {},
+  "required_fields": [],
+  "stub_verdict": "insufficient_information",
+  "stub_risk_level": "medium",
+  "stub_summary": "Agricultural genomics assessment requires species, sample origin, variety information, testing purpose, commercial use, and potential variety-rights or biosafety context. This is a v0.1 stub pack: it routes correctly but does not yet apply detailed rules."
+}

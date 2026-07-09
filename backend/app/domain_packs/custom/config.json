@@ -1,0 +1,15 @@
+{
+  "id": "custom",
+  "name": "Custom Use Case",
+  "version": "0.1.0",
+  "status": "stub",
+  "supported_object_types": [],
+  "supported_sources": [],
+  "metadata_signals": [],
+  "field_map": {},
+  "required_fields": [],
+  "baseline_score": 0.1,
+  "stub_verdict": "insufficient_information",
+  "stub_risk_level": "unknown",
+  "stub_summary": "The system could not confidently route this assessment to a supported domain pack. Additional information is needed, or this scenario is outside the domains covered by v0.1."
+}
